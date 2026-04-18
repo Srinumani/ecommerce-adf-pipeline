@@ -1,0 +1,67 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "employeesourcsblobtosql",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "sourcetosqlsink",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "price"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          TransactionID as string,",
+				"          CustomerID as string,",
+				"          Product_Name as string,",
+				"          Category as string,",
+				"          Price as string,",
+				"          Quantity as string,",
+				"          TransactionDate as string,",
+				"          Store_Location as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 derive(Price = iif(     isNull(Price) || Price == 'NULL' || trim(Price) == '',     toDecimal(0,10,2),     toDecimal(trim(Price),10,2) )) ~> price",
+				"price sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          TransactionID as integer,",
+				"          CustomerID as string,",
+				"          Product_Name as string,",
+				"          Category as string,",
+				"          Price as decimal(10,2),",
+				"          Quantity as integer,",
+				"          TransactionDate as string,",
+				"          Store_Location as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+			]
+		}
+	}
+}

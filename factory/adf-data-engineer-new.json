@@ -1,0 +1,9 @@
+{
+	"name": "adf-data-engineer-new",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "c7cb1bf5-db7e-449d-8495-58ec03d33998",
+		"tenantId": "3aeca014-88c5-48ca-bf76-9554a5407817"
+	}
+}

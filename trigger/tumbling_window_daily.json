@@ -1,0 +1,30 @@
+{
+	"name": "tumbling_window_daily",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipeline": {
+			"pipelineReference": {
+				"referenceName": "bronze_ingestion_pipeline",
+				"type": "PipelineReference"
+			},
+			"parameters": {
+				"source_file": "orders",
+				"bronze_folder": "bronze"
+			}
+		},
+		"type": "TumblingWindowTrigger",
+		"typeProperties": {
+			"frequency": "Hour",
+			"interval": 24,
+			"startTime": "2026-04-01T00:00:00Z",
+			"delay": "00:00:00",
+			"maxConcurrency": 1,
+			"retryPolicy": {
+				"count": 3,
+				"intervalInSeconds": 30
+			},
+			"dependsOn": []
+		}
+	}
+}

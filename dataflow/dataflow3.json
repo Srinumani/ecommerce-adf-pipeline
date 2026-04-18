@@ -1,0 +1,80 @@
+{
+	"name": "dataflow3",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "blobDelimitedText1",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "sort1"
+				},
+				{
+					"name": "aggregate2"
+				},
+				{
+					"name": "window1"
+				},
+				{
+					"name": "filter2"
+				},
+				{
+					"name": "aggregate3"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          emp_id as integer,",
+				"          name as string,",
+				"          salary as decimal(10,2),",
+				"          address as string,",
+				"          loc as string,",
+				"          email as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"aggregate2 filter(salary>=20000) ~> filter1",
+				"filter1 sort(asc(salary, true),",
+				"     caseInsensitive: true) ~> sort1",
+				"filter2 aggregate(groupBy(emp_id,",
+				"          name,",
+				"          salary,",
+				"          address,",
+				"          loc,",
+				"          email),",
+				"     dummy = first(emp_id)) ~> aggregate2",
+				"source1 window(over(emp_id),",
+				"     asc(salary, true),",
+				"     rn = rowNumber()) ~> window1",
+				"window1 filter(rn==1) ~> filter2",
+				"sort1 aggregate(groupBy(address),",
+				"     salary = sum(salary)) ~> aggregate3",
+				"aggregate3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}
