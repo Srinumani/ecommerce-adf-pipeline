@@ -71,22 +71,6 @@
 			"type": "string",
 			"defaultValue": "https://dummyjson.com"
 		},
-		"trigger1_properties_pipeline_parameters_windowStart": {
-			"type": "string",
-			"defaultValue": "@trigger().outputs.windowStartTime"
-		},
-		"trigger1_properties_pipeline_parameters_windowEnd": {
-			"type": "string",
-			"defaultValue": "@trigger().outputs.windowEndTime"
-		},
-		"tumbling_window_daily_properties_pipeline_parameters_source_file": {
-			"type": "string",
-			"defaultValue": "orders"
-		},
-		"tumbling_window_daily_properties_pipeline_parameters_bronze_folder": {
-			"type": "string",
-			"defaultValue": "bronze"
-		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -184,38 +168,6 @@
 			},
 			"dependsOn": [
 				"[resourceId('Microsoft.Resources/deployments', 'adf-data-engineer-new_ArmTemplate_0')]"
-			]
-		},
-		{
-			"name": "adf-data-engineer-new_ArmTemplate_2",
-			"type": "Microsoft.Resources/deployments",
-			"apiVersion": "2024-03-01",
-			"properties": {
-				"mode": "incremental",
-				"templateLink": {
-					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
-					"contentVersion": "1.0.0.0"
-				},
-				"parameters": {
-					"factoryName": {
-						"value": "[parameters('factoryName')]"
-					},
-					"tumbling_window_daily_properties_pipeline_parameters_source_file": {
-						"value": "[parameters('tumbling_window_daily_properties_pipeline_parameters_source_file')]"
-					},
-					"tumbling_window_daily_properties_pipeline_parameters_bronze_folder": {
-						"value": "[parameters('tumbling_window_daily_properties_pipeline_parameters_bronze_folder')]"
-					},
-					"trigger1_properties_pipeline_parameters_windowStart": {
-						"value": "[parameters('trigger1_properties_pipeline_parameters_windowStart')]"
-					},
-					"trigger1_properties_pipeline_parameters_windowEnd": {
-						"value": "[parameters('trigger1_properties_pipeline_parameters_windowEnd')]"
-					}
-				}
-			},
-			"dependsOn": [
-				"[resourceId('Microsoft.Resources/deployments', 'adf-data-engineer-new_ArmTemplate_1')]"
 			]
 		}
 	]
