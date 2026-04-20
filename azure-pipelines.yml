@@ -4,13 +4,24 @@ trigger:
       - main
 
 pool:
-  name: MyLocalAgent   # 🔥 IMPORTANT CHANGE
+  name: MyLocalAgent
 
 variables:
   artifactName: 'adf-arm-templates'
 
 steps:
 
+# 🔥 ADD THIS BLOCK (VERY IMPORTANT)
+- checkout: self
+  persistCredentials: true
+
+- powershell: |
+    Write-Host "Switching to adf_publish branch"
+    git fetch origin
+    git checkout adf_publish
+  displayName: 'Checkout adf_publish branch'
+
+# Existing steps
 - powershell: |
     Write-Host "=== Repository Structure ==="
     Get-ChildItem
@@ -23,7 +34,7 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathToPublish: '$(Build.SourcesDirectory)/adf_publish'
+    pathToPublish: '$(Build.SourcesDirectory)'
     artifactName: '$(artifactName)'
     publishLocation: 'Container'
   displayName: 'Publish ADF Files as Artifact'
