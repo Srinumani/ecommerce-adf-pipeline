@@ -38,12 +38,9 @@ stages:
         Get-ChildItem -Recurse -Filter *.json | Select-Object -First 20
       displayName: 'Validate ARM Templates'
 
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathToPublish: '$(Build.SourcesDirectory)'
-        artifactName: '$(artifactName)'
-        publishLocation: 'Container'
-      displayName: 'Publish ADF Files as Artifact'
+    - publish: $(Build.SourcesDirectory)
+      artifact: $(artifactName)
+      displayName: 'Publish ADF Files as Pipeline Artifact'
 
 
 # =========================
