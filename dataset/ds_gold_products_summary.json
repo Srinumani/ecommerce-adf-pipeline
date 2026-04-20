@@ -1,0 +1,38 @@
+{
+	"name": "ds_gold_products_summary",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_adls_ecommerce",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "products_summary.parquet",
+				"folderPath": "products_summary",
+				"fileSystem": "gold"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "Month",
+				"type": "UTF8"
+			},
+			{
+				"name": "\"1958\"",
+				"type": "UTF8"
+			},
+			{
+				"name": "\"1959\"",
+				"type": "UTF8"
+			},
+			{
+				"name": "\"1960\"",
+				"type": "UTF8"
+			}
+		]
+	}
+}

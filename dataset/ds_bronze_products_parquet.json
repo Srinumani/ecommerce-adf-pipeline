@@ -1,0 +1,34 @@
+{
+	"name": "ds_bronze_products_parquet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_adls_ecommerce",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "products_raw.parquet",
+				"folderPath": "products",
+				"fileSystem": "bronze"
+			},
+			"compressionCodec": "none"
+		},
+		"schema": [
+			{
+				"name": "total",
+				"type": "INT64"
+			},
+			{
+				"name": "skip",
+				"type": "INT64"
+			},
+			{
+				"name": "limit",
+				"type": "INT64"
+			}
+		]
+	}
+}

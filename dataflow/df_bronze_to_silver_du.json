@@ -1,0 +1,74 @@
+{
+	"name": "df_bronze_to_silver_du",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_bronze_products_parquet",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_silver_products",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FilterValidPrice"
+				},
+				{
+					"name": "AddBusinessColumns"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id as long,",
+				"          name as string,",
+				"          category as string,",
+				"          price as long",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> source1",
+				"source1 filter(price>0) ~> FilterValidPrice",
+				"FilterValidPrice derive(pipeline_date = currentDate(),",
+				"          source_system = 'ADLS_JSON_FILE',",
+				"          discount_price = price * 0.9,",
+				"          category_type = iif(price > 1000, 'Premium', 'Budget')) ~> AddBusinessColumns",
+				"AddBusinessColumns select(mapColumn(",
+				"          id,",
+				"          name,",
+				"          category,",
+				"          price,",
+				"          pipeline_date,",
+				"          source_system,",
+				"          discount_price,",
+				"          category_type",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}
