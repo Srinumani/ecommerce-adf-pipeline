@@ -1,42 +1,26 @@
-# ═══════════════════════════════════════════════
-# CI Pipeline — E-Commerce ADF Pipeline
-# Triggered on every push to main branch
-# Packages ADF ARM templates as build artifact
-# ═══════════════════════════════════════════════
-
 trigger:
   branches:
     include:
-      - main          # Run CI when code merges to main
+      - main
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: MyLocalAgent   # 🔥 IMPORTANT CHANGE
 
 variables:
   artifactName: 'adf-arm-templates'
 
 steps:
 
-# Step 1 — Show what files are in the repo
-- script: |
-    echo "=== Repository Structure ==="
-    ls -la
-    echo "=== ADF Publish Branch Files ==="
-    ls -la || echo "No adf_publish files in main"
+- powershell: |
+    Write-Host "=== Repository Structure ==="
+    Get-ChildItem
   displayName: 'Show Repository Contents'
 
-# Step 2 — Validate ARM template exists
-- script: |
-    echo "Checking for ADF ARM templates..."
-    if [ -d "$(Build.SourcesDirectory)" ]; then
-      echo "Source directory found"
-      find . -name "*.json" | head -20
-    fi
+- powershell: |
+    Write-Host "Checking for ADF ARM templates..."
+    Get-ChildItem -Recurse -Filter *.json | Select-Object -First 20
   displayName: 'Validate ARM Templates'
 
-# Step 3 — Publish as build artifact
-# This packages all ADF JSON files
-# CD pipeline will use this artifact for deployment
 - task: PublishBuildArtifacts@1
   inputs:
     pathToPublish: '$(Build.SourcesDirectory)'
@@ -44,9 +28,7 @@ steps:
     publishLocation: 'Container'
   displayName: 'Publish ADF Files as Artifact'
 
-# Step 4 — Show success message
-- script: |
-    echo "=== CI Pipeline Complete ==="
-    echo "ADF ARM templates packaged as artifact: $(artifactName)"
-    echo "Ready for CD deployment to QA environment"
+- powershell: |
+    Write-Host "=== CI Pipeline Complete ==="
+    Write-Host "ADF ARM templates packaged successfully"
   displayName: 'CI Complete'
