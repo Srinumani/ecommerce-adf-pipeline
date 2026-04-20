@@ -55,6 +55,10 @@ stages:
   - job: DeployJob
     steps:
 
+     # 🔥 ADD THIS STEP
+    - download: current
+      artifact: $(artifactName)
+
     - task: AzureResourceManagerTemplateDeployment@3
       inputs:
         deploymentScope: 'Resource Group'
