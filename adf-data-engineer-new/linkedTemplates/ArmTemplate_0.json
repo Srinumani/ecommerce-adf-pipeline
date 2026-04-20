@@ -498,6 +498,45 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_bronze_products_parquet')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_adls_ecommerce",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "products_raw.parquet",
+						"folderPath": "products",
+						"fileSystem": "bronze"
+					},
+					"compressionCodec": "none"
+				},
+				"schema": [
+					{
+						"name": "total",
+						"type": "INT64"
+					},
+					{
+						"name": "skip",
+						"type": "INT64"
+					},
+					{
+						"name": "limit",
+						"type": "INT64"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_adls_ecommerce')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_bronze_users')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -547,49 +586,46 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_products_api')]",
+			"name": "[concat(parameters('factoryName'), '/ds_gold_products_summary')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "ls_dummyjson_api",
+					"referenceName": "ls_adls_ecommerce",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "Json",
+				"type": "Parquet",
 				"typeProperties": {
 					"location": {
-						"type": "HttpServerLocation",
-						"relativeUrl": "/products?limit=100"
-					}
+						"type": "AzureBlobFSLocation",
+						"fileName": "products_summary.parquet",
+						"folderPath": "products_summary",
+						"fileSystem": "gold"
+					},
+					"compressionCodec": "snappy"
 				},
-				"schema": {}
+				"schema": [
+					{
+						"name": "Month",
+						"type": "UTF8"
+					},
+					{
+						"name": "\"1958\"",
+						"type": "UTF8"
+					},
+					{
+						"name": "\"1959\"",
+						"type": "UTF8"
+					},
+					{
+						"name": "\"1960\"",
+						"type": "UTF8"
+					}
+				]
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_dummyjson_api')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_users_api')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_dummyjson_api",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "HttpServerLocation",
-						"relativeUrl": "/users?limit=100"
-					}
-				},
-				"schema": {}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_dummyjson_api')]"
+				"[concat(variables('factoryId'), '/linkedServices/ls_adls_ecommerce')]"
 			]
 		}
 	]
