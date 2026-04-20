@@ -1,0 +1,36 @@
+{
+	"name": "ds_source_products_json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_adls_ecommerce",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "products.json",
+				"folderPath": "products",
+				"fileSystem": "bronzesource"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"id": {
+					"type": "integer"
+				},
+				"name": {
+					"type": "string"
+				},
+				"category": {
+					"type": "string"
+				},
+				"price": {
+					"type": "integer"
+				}
+			}
+		}
+	}
+}
