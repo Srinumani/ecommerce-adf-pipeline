@@ -9,37 +9,60 @@ pool:
 variables:
   artifactName: 'adf-arm-templates'
 
-steps:
+stages:
 
-# 🔥 ADD THIS BLOCK (VERY IMPORTANT)
-- checkout: self
-  persistCredentials: true
+# =========================
+# STAGE 1 — CI (BUILD)
+# =========================
+- stage: Build
+  jobs:
+  - job: BuildJob
+    steps:
 
-- powershell: |
-    Write-Host "Switching to adf_publish branch"
-    git fetch origin
-    git checkout adf_publish
-  displayName: 'Checkout adf_publish branch'
+    - checkout: self
+      persistCredentials: true
 
-# Existing steps
-- powershell: |
-    Write-Host "=== Repository Structure ==="
-    Get-ChildItem
-  displayName: 'Show Repository Contents'
+    - powershell: |
+        Write-Host "Switching to adf_publish branch"
+        git fetch origin
+        git checkout adf_publish
+      displayName: 'Checkout adf_publish branch'
 
-- powershell: |
-    Write-Host "Checking for ADF ARM templates..."
-    Get-ChildItem -Recurse -Filter *.json | Select-Object -First 20
-  displayName: 'Validate ARM Templates'
+    - powershell: |
+        Write-Host "=== Repository Structure ==="
+        Get-ChildItem
+      displayName: 'Show Repository Contents'
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathToPublish: '$(Build.SourcesDirectory)'
-    artifactName: '$(artifactName)'
-    publishLocation: 'Container'
-  displayName: 'Publish ADF Files as Artifact'
+    - powershell: |
+        Write-Host "Checking for ADF ARM templates..."
+        Get-ChildItem -Recurse -Filter *.json | Select-Object -First 20
+      displayName: 'Validate ARM Templates'
 
-- powershell: |
-    Write-Host "=== CI Pipeline Complete ==="
-    Write-Host "ADF ARM templates packaged successfully"
-  displayName: 'CI Complete'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathToPublish: '$(Build.SourcesDirectory)'
+        artifactName: '$(artifactName)'
+        publishLocation: 'Container'
+      displayName: 'Publish ADF Files as Artifact'
+
+
+# =========================
+# STAGE 2 — CD (DEPLOY)
+# =========================
+- stage: Deploy
+  dependsOn: Build
+  jobs:
+  - job: DeployJob
+    steps:
+
+    - task: AzureResourceManagerTemplateDeployment@3
+      inputs:
+        deploymentScope: 'Resource Group'
+        azureResourceManagerConnection: 'azure-connection'   # 👈 update this
+        subscriptionId: '4d808be8-c23a-4b5f-b5c7-c09d50e544e1'               # 👈 update this
+        action: 'Create Or Update Resource Group'
+        resourceGroupName: 'rg-data-engineer'                         # 👈 update this
+        location: 'Central India'
+        templateLocation: 'Linked artifact'
+        csmFile: '$(Pipeline.Workspace)/$(artifactName)/ARMTemplateForFactory.json'
+        csmParametersFile: '$(Pipeline.Workspace)/$(artifactName)/ARMTemplateParametersForFactory.json'
