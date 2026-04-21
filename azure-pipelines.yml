@@ -70,5 +70,5 @@ stages:
         resourceGroupName: 'rg-data-engineer'
         location: 'Central India'
         templateLocation: 'Linked artifact'
-        csmFile: '$(Pipeline.Workspace)/$(artifactName)/adf_publish/ARMTemplateForFactory.json'
-        csmParametersFile: '$(Pipeline.Workspace)/$(artifactName)/adf_publish/ARMTemplateParametersForFactory.json'
+        csmFile: '$(Pipeline.Workspace)/$(artifactName)/adf-data-engineer-new/ARMTemplateForFactory.json'
+        csmParametersFile: '$(Pipeline.Workspace)/$(artifactName)/adf-data-engineer-new/ARMTemplateParametersForFactory.json'
