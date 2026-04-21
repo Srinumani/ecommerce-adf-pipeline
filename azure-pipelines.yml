@@ -30,12 +30,12 @@ stages:
 
     - powershell: |
         Write-Host "=== Repository Structure ==="
-        Get-ChildItem
+        Get-ChildItem -Recurse | Select-Object FullName
       displayName: 'Show Repository Contents'
 
     - powershell: |
         Write-Host "Checking for ADF ARM templates..."
-        Get-ChildItem -Recurse -Filter *.json | Select-Object -First 20
+        Get-ChildItem -Recurse -Filter *.json | Select-Object FullName
       displayName: 'Validate ARM Templates'
 
     - publish: $(Build.SourcesDirectory)
@@ -52,17 +52,22 @@ stages:
   - job: DeployJob
     steps:
 
-     # 🔥 ADD THIS STEP
     - download: current
       artifact: $(artifactName)
+
+    # ── NEW STEP — shows exact file paths ──────────────
+    - powershell: |
+        Write-Host "=== Pipeline Workspace Contents ==="
+        Get-ChildItem -Path $(Pipeline.Workspace) -Recurse | Select-Object FullName
+      displayName: 'Show Downloaded Artifact Contents'
 
     - task: AzureResourceManagerTemplateDeployment@3
       inputs:
         deploymentScope: 'Resource Group'
-        azureResourceManagerConnection: 'azure-connection'   # 👈 update this
-        subscriptionId: '4d808be8-c23a-4b5f-b5c7-c09d50e544e1'               # 👈 update this
+        azureResourceManagerConnection: 'azure-connection'
+        subscriptionId: '4d808be8-c23a-4b5f-b5c7-c09d50e544e1'
         action: 'Create Or Update Resource Group'
-        resourceGroupName: 'rg-data-engineer'                         # 👈 update this
+        resourceGroupName: 'rg-data-engineer'
         location: 'Central India'
         templateLocation: 'Linked artifact'
         csmFile: '$(Pipeline.Workspace)/$(artifactName)/adf_publish/ARMTemplateForFactory.json'
