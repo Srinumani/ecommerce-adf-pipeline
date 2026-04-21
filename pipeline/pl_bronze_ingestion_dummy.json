@@ -1,6 +1,7 @@
 {
 	"name": "pl_bronze_ingestion_dummy",
 	"properties": {
+		"description": "Version 1.1 - CI/CD Test",
 		"activities": [
 			{
 				"name": "copy_json_to_parquet",
